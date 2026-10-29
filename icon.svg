@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Bing daily wallpaper">
+  <!-- Wallpaper icon: a framed landscape photo (sky, sun, two mountain
+       ridges) in the DeepSeek Harness blue family. Original artwork. -->
+  <defs>
+    <linearGradient id="dbw-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4176e6"/>
+      <stop offset="1" stop-color="#82b0ff"/>
+    </linearGradient>
+    <linearGradient id="dbw-snow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#d8e5fb"/>
+    </linearGradient>
+    <clipPath id="dbw-frame">
+      <rect x="4" y="4" width="56" height="56" rx="14"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#dbw-frame)">
+    <rect x="4" y="4" width="56" height="56" fill="url(#dbw-sky)"/>
+    <!-- sun with halo -->
+    <circle cx="44" cy="20" r="9" fill="#ffffff" opacity="0.22"/>
+    <circle cx="44" cy="20" r="5.5" fill="#ffffff"/>
+    <!-- back ridge -->
+    <path d="M4 47 L19 28 L29 40 L38 32 L56 47 L56 60 L4 60 Z" fill="#ffffff" opacity="0.55"/>
+    <!-- front ridge -->
+    <path d="M4 60 L4 52 L17 36 L28 50 L38 40 L50 52 L56 47 L60 51 L60 60 Z" fill="url(#dbw-snow)"/>
+  </g>
+  <!-- photo-frame inner stroke -->
+  <rect x="4.75" y="4.75" width="54.5" height="54.5" rx="13.25" fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1.5"/>
+</svg>

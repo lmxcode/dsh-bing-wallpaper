@@ -1,0 +1,33 @@
+{
+  "name": "dsh-bing-wallpaper",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "必应每日壁纸作为 DeepSeek Harness 界面背景：每天自动更换，可选最近 30 天任意一天。Bing daily wallpaper for DeepSeek Harness: auto-refresh every day, pin any of the last 30 days.",
+  "license": "MIT",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "bing",
+    "wallpaper",
+    "bing-wallpaper",
+    "daily-wallpaper",
+    "background"
+  ],
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": ["index.js", "client.js", "cordis.patch.yml", "locale/*.json", "icon.svg", "README.md", "LICENSE"],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": ["@deepseek-ai/dsh-client-ui-theme"]
+    }
+  }
+}
