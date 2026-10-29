@@ -1,9 +1,16 @@
 {
   "name": "dsh-bing-wallpaper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "必应每日壁纸作为 DeepSeek Harness 界面背景：每天自动更换，可选最近 30 天任意一天。Bing daily wallpaper for DeepSeek Harness: auto-refresh every day, pin any of the last 30 days.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lmxcode/dsh-bing-wallpaper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lmxcode/dsh-bing-wallpaper/issues"
+  },
   "keywords": [
     "dsh",
     "deepseek-harness",
