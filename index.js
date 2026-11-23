@@ -5,7 +5,8 @@
  * performs a cross-origin request:
  *
  *  - GET /plugins/bing-wallpaper/today -> { ok, headline, title, copyright,
- *    date, imageUrl, pageUrl }  (proxied from the public /bing/today API)
+ *    date, imageUrl, uhdUrl, pageUrl }  (proxied from the public /bing/today
+ *    API; both quality variants travel together, the client picks)
  *  - GET /plugins/bing-wallpaper/list  -> { ok, today, items: [...] }  the
  *    recent gallery window (last 30 days), parsed from the server-rendered
  *    homepage plus a rolling archive the plugin accumulates from /today
@@ -47,10 +48,6 @@ function toUhd(url) {
 /** Derive the thumbnail variant (same path under /abb/). */
 function toThumb(url) {
   return url.includes('/fhd/') ? url.replace('/fhd/', '/abb/') : url;
-}
-
-function pickQuality(config) {
-  return config?.quality === 'uhd' ? 'uhd' : 'fhd';
 }
 
 /** Local calendar day (yyyy-mm-dd) of the Host, used to detect rollover. */
@@ -131,8 +128,7 @@ async function loadUpstream(signal) {
   };
 }
 
-export function apply(ctx, config = {}) {
-  const preferUhd = pickQuality(config) === 'uhd';
+export function apply(ctx) {
   let cache = null; // { at: number, payload: object }
   /** Rolling archive of seen wallpapers: date -> entry (fhd canonical URLs). */
   const archive = new Map();
@@ -172,9 +168,9 @@ export function apply(ctx, config = {}) {
                   thumbUrl: toThumb(upstream.imageUrl),
                 });
               }
-              const payload = preferUhd
-                ? { ...upstream, imageUrl: toUhd(upstream.imageUrl) }
-                : upstream;
+              // Both variants travel in one payload; the client's quality
+              // preference picks one without another round-trip.
+              const payload = { ...upstream, uhdUrl: toUhd(upstream.imageUrl) };
               cache = { at: Date.now(), payload };
             }
             send(200, cache.payload);
@@ -211,9 +207,7 @@ export function apply(ctx, config = {}) {
             return [...archive.values()]
               .filter((entry) => entry.date >= cutoff)
               .sort((a, b) => b.date.localeCompare(a.date))
-              .map((entry) =>
-                preferUhd ? { ...entry, imageUrl: toUhd(entry.imageUrl) } : { ...entry },
-              );
+              .map((entry) => ({ ...entry, uhdUrl: toUhd(entry.imageUrl) }));
           };
           try {
             if (Date.now() - listAt > LIST_TTL_MS) {
