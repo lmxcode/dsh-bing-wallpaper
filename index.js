@@ -71,9 +71,12 @@ function archiveCutoff() {
 }
 
 /**
- * Parse the server-rendered homepage wallpaper list into the archive. Each
- * panel carries data-fhd/data-title attributes plus a location line and a
- * dated footer, so no signed archive API is needed.
+ * Parse the server-rendered homepage wallpaper list into the archive.
+ * The upstream redesigned the homepage (2026-11): panels no longer carry
+ * data-fhd/data-title attributes; the thumbnail now lives on the mainImg
+ * element and the 4K link in the footer. Both generations expose the image
+ * path under /bing/<variant>/<yyyymm>/<hash>.jpg with the same hash, so the
+ * fhd/abb variants stay derivable from whichever link is present.
  * @returns {number} how many entries were merged.
  */
 function parseHomepage(html, archive) {
@@ -81,12 +84,20 @@ function parseHomepage(html, archive) {
   const chunks = html.split('<div class="panel mainItem').slice(1);
   for (const chunk of chunks) {
     const head = chunk.slice(0, 6000);
-    const fhd = /data-fhd="([^"]+)"/.exec(head)?.[1];
-    const headline = /data-title="([^"]*)"/.exec(head)?.[1] ?? '';
+    // Canonical image path from any generation: data-fhd (old markup),
+    // the footer 4K link, or the mainImg thumbnail source (new markup).
+    const rawPath =
+      /data-fhd="([^"]+)"/.exec(head)?.[1] ??
+      /href="(\/bing\/uhd\/[^"]+)"/.exec(head)?.[1] ??
+      /<img class="mainImg" src="([^"]+)"/.exec(head)?.[1];
+    const headline =
+      /data-title="([^"]*)"/.exec(head)?.[1] ?? /alt="([^"]*)"/.exec(head)?.[1] ?? '';
     const title = /<div class="panel-body">([^<]*)<\/div>/.exec(chunk)?.[1]?.trim() ?? '';
     const date = /<span>(\d{4}-\d{2}-\d{2})<\/span>/.exec(chunk)?.[1];
-    if (!fhd || !date) continue;
-    const imageUrl = absoluteUrl(normalizeUrl(fhd));
+    if (!rawPath || !date) continue;
+    const imageUrl = absoluteUrl(normalizeUrl(rawPath))
+      .replace('/uhd/', '/fhd/')
+      .replace('/abb/', '/fhd/');
     archive.set(date, { date, headline, title, copyright: '', imageUrl, thumbUrl: toThumb(imageUrl) });
     merged += 1;
   }
